@@ -23,62 +23,80 @@
             to { transform: rotate(360deg); }
         }
         .table-container {
-            max-height: 60vh;
+            max-height: 70vh;
             overflow-y: auto;
+        }
+        .score-bar {
+            background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 100%);
+            border-radius: 4px;
+            height: 100%;
         }
     </style>
 </head>
 <body class="bg-gray-900 text-white min-h-screen flex items-center justify-center p-4">
 
-    <div class="w-full max-w-6xl mx-auto">
+    <div class="w-full max-w-7xl mx-auto">
         <header class="text-center mb-8">
             <h1 class="text-4xl md:text-5xl font-bold tracking-tight">Radar de Inversiones con IA</h1>
-            <p class="text-gray-400 mt-2 text-lg">Descubre las 10 mejores oportunidades del día basadas en noticias del mercado.</p>
+            <p class="text-gray-400 mt-2 text-lg">Ranking integrado de análisis de noticias y técnico (Fibonacci a 1 semana).</p>
         </header>
 
         <main class="space-y-8">
             <div class="flex justify-center">
                  <button id="analyze-button" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-lg text-xl transition duration-300 ease-in-out transform hover:scale-105 flex items-center justify-center">
-                    <svg id="button-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M12 6V3m0 18v-3" />
+                    <svg id="button-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0,0,256,256" stroke="currentColor">
+                        <g fill-opacity="0" fill="#dddddd" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><path d="M0,256v-256h256v256z" id="bgRectangle"></path></g><g fill="#ffffff" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><g transform="scale(5.12,5.12)"><path d="M30.4,11.2c-1.3,-1.3 -3.1,-2.2 -5.2,-2.2c-4.1,0 -7.4,3.3 -7.4,7.4c0,2,0.8,3.9,2.2,5.2c1.3,1.3,3.1,2.2,5.2,2.2c4.1,0,7.4,-3.3,7.4,-7.4c0,-2.1 -0.8,-3.9 -2.2,-5.2zM25.2,22c-3,0 -5.4,-2.4 -5.4,-5.4c0,-3,2.4,-5.4,5.4,-5.4c3,0,5.4,2.4,5.4,5.4c0,3 -2.4,5.4 -5.4,5.4zM43,21v-14c0,-1.6 -1.3,-3 -3,-3h-14c-0.6,0 -1,-0.4 -1,-1c0,-0.6 0.4,-1 1,-1h14c2.8,0 5,2.2 5,5v14c0,0.6 -0.4,1 -1,1c-0.6,0 -1,-0.4 -1,-1zM7,29h14c0.6,0 1,0.4 1,1c0,0.6 -0.4,1 -1,1h-14c-2.8,0 -5,-2.2 -5,-5v-14c0,-0.6 0.4,-1 1,-1c0.6,0 1,0.4 1,1v14c0,1.7 1.3,3 3,3z"></path></g></g>
                     </svg>
                     <span id="button-text">Analizar Mercado Ahora</span>
                 </button>
             </div>
 
-            <!-- Columna de Resultados -->
-            <div class="space-y-6">
-                 <div id="loader" class="hidden flex-col items-center justify-center glass-card rounded-2xl p-6 min-h-[300px]">
-                    <div class="loader h-16 w-16 rounded-full border-4 border-gray-700 border-t-blue-500"></div>
-                    <p id="loader-text" class="mt-4 text-gray-300 text-lg">Analizando noticias del mercado...</p>
-                </div>
+            <div id="loader" class="hidden flex-col items-center justify-center glass-card rounded-2xl p-6 min-h-[300px]">
+                <div class="loader h-16 w-16 rounded-full border-4 border-gray-700 border-t-blue-500"></div>
+                <p id="loader-text" class="mt-4 text-gray-300 text-lg">Analizando noticias del mercado...</p>
+            </div>
 
-                <div id="results-container" class="hidden glass-card rounded-2xl p-6">
-                    <h2 class="text-3xl font-semibold mb-4 text-center">Top 10 Oportunidades de Inversión</h2>
-                    <div class="table-container">
-                        <table class="w-full text-left">
-                            <thead class="sticky top-0 bg-gray-900 bg-opacity-80 backdrop-filter backdrop-blur-sm">
-                                <tr>
-                                    <th class="p-3">Activo</th>
-                                    <th class="p-3">Empresa</th>
-                                    <th class="p-3">Sentimiento</th>
-                                    <th class="p-3 text-right">Valor Actual (USD)</th>
-                                    <th class="p-3 text-right">Rendimiento Estimado (1 mes)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="results-tbody">
-                                <!-- Las filas se insertarán aquí dinámicamente -->
-                            </tbody>
-                        </table>
-                    </div>
+            <div id="results-container" class="hidden glass-card rounded-2xl p-6">
+                <h2 class="text-3xl font-semibold mb-4 text-center">Top 10 Oportunidades (Puntaje Integrado)</h2>
+                <div class="table-container">
+                    <table class="w-full text-left">
+                        <thead class="sticky top-0 bg-gray-900 bg-opacity-80 backdrop-filter backdrop-blur-sm">
+                            <tr>
+                                <th class="p-3 w-1/4">Activo</th>
+                                <th class="p-3 text-right">Precio Actual</th>
+                                <th class="p-3 text-right">Puntaje Sentimiento</th>
+                                <th class="p-3 text-right">Puntaje Técnico</th>
+                                <th class="p-3 w-1/4">Puntaje Total</th>
+                                <th class="p-3 text-center">Análisis Detallado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="results-tbody">
+                            <!-- Filas dinámicas -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </main>
         
         <footer class="text-center mt-10 text-gray-500 text-sm">
-            <p>Búsqueda de noticias y análisis de IA simulados para demostración.</p>
-            <p>Descargo de responsabilidad: Esta es una herramienta de demostración. Las recomendaciones no constituyen asesoramiento financiero.</p>
+            <p>Datos de mercado y noticias simulados. La Tesis de Inversión es generada en tiempo real por una IA.</p>
+            <p>Descargo de responsabilidad: Esta no es una recomendación financiera.</p>
         </footer>
+    </div>
+    
+    <!-- Modal para Tesis de Inversión -->
+    <div id="thesis-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50 transition-opacity duration-300">
+        <div class="glass-card rounded-2xl p-8 max-w-2xl w-full relative transform scale-95 transition-transform duration-300">
+            <button id="close-modal-button" class="absolute top-4 right-4 text-gray-400 hover:text-white text-3xl leading-none">&times;</button>
+            <h3 id="thesis-title" class="text-2xl font-bold mb-4"></h3>
+            <div id="thesis-loader" class="text-center p-8">
+                <div class="loader h-12 w-12 mx-auto border-t-teal-500"></div>
+                <p class="mt-4 text-gray-300">La IA está redactando la tesis de inversión...</p>
+            </div>
+            <div id="thesis-content" class="hidden">
+                <p id="thesis-text" class="text-gray-300 whitespace-pre-wrap text-lg leading-relaxed"></p>
+            </div>
+        </div>
     </div>
 
 <script>
@@ -88,139 +106,216 @@
     const loaderText = document.getElementById('loader-text');
     const resultsContainer = document.getElementById('results-container');
     const resultsTbody = document.getElementById('results-tbody');
+    const thesisModal = document.getElementById('thesis-modal');
+    const closeModalButton = document.getElementById('close-modal-button');
+    const thesisTitle = document.getElementById('thesis-title');
+    const thesisLoader = document.getElementById('thesis-loader');
+    const thesisContent = document.getElementById('thesis-content');
+    const thesisText = document.getElementById('thesis-text');
+
 
     // --- Event Listeners ---
-    analyzeButton.addEventListener('click', handleAnalysis);
+    analyzeButton.addEventListener('click', handleMarketAnalysis);
+    closeModalButton.addEventListener('click', closeThesisModal);
+    thesisModal.addEventListener('click', (e) => {
+        if (e.target === thesisModal) closeThesisModal();
+    });
 
     // --- Main Logic ---
-    async function handleAnalysis() {
-        setLoadingState(true, 'Buscando las últimas noticias financieras...');
+    async function handleMarketAnalysis() {
+        setLoadingState(true, 'Paso 1/4: Analizando noticias del mercado...');
         resultsContainer.classList.add('hidden');
 
         try {
-            const articles = await fetchNews(); // Esta función ahora es simulada
-            if (!articles || articles.length === 0) {
-                 console.error("No se encontraron noticias para analizar.");
-                 setLoadingState(false);
-                 return;
-            }
-
-            setLoadingState(true, 'La IA está analizando el mercado...');
-            const newsHeadlines = articles.map(a => a.title).join('\n');
-            const analysisResults = await callGeminiForBulkAnalysis(newsHeadlines); // Esta función ahora es simulada
-
-            const positiveOpportunities = analysisResults
-                .filter(res => res.sentiment === 'Positivo' && res.potential_roi > 0)
-                .sort((a, b) => b.potential_roi - a.potential_roi)
-                .slice(0, 10);
+            const newsCandidates = await getNewsAndSentimentAnalysis();
+            if (!newsCandidates || newsCandidates.length === 0) throw new Error("No se encontraron candidatos en las noticias.");
             
-            displayTop10Results(positiveOpportunities);
+            setLoadingState(true, `Paso 2/4: Obteniendo datos de mercado para ${newsCandidates.length} activos...`);
+            const stockDataPromises = newsCandidates.map(candidate => fetchStockData(candidate.ticker));
+            const stockDataResults = await Promise.all(stockDataPromises);
+
+            setLoadingState(true, 'Paso 3/4: Calculando puntajes técnicos e integrados...');
+            const integratedOpportunities = newsCandidates.map((candidate, index) => {
+                const stockData = stockDataResults[index];
+                if (!stockData || stockData.error || !stockData["Time Series (Daily)"]) {
+                    console.warn(`No se pudieron obtener datos para ${candidate.ticker}, será excluido.`);
+                    return null;
+                }
+                try {
+                    const fibAnalysis = calculateFibonacci(stockData);
+                    const technicalScore = calculateTechnicalScore(fibAnalysis);
+                    const sentimentScore = candidate.potential_roi;
+                    const totalScore = technicalScore + sentimentScore;
+                    return { ...candidate, currentPrice: fibAnalysis.latestClose, technicalScore, totalScore };
+                } catch (calcError) {
+                    console.warn(`Error calculando análisis para ${candidate.ticker}: ${calcError.message}`);
+                    return null;
+                }
+            }).filter(Boolean);
+
+            setLoadingState(true, 'Paso 4/4: Finalizando y mostrando resultados...');
+            integratedOpportunities.sort((a, b) => b.totalScore - a.totalScore);
+            displayTop10Results(integratedOpportunities.slice(0, 10));
 
         } catch (error) {
             console.error('Error en el proceso de análisis:', error);
             loaderText.textContent = `Error: ${error.message}`;
             loader.querySelector('.loader').classList.add('hidden');
         } finally {
-            if (!loaderText.textContent.startsWith('Error:')) {
-                setLoadingState(false);
+            if (!loaderText.textContent.startsWith('Error:')) setLoadingState(false);
+        }
+    }
+
+    async function handleThesisRequest(ticker, companyName, sentimentScore, technicalScore) {
+        openThesisModal(ticker, companyName);
+        try {
+            const response = await fetch('/api/generate-thesis', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ticker, companyName, sentimentScore, technicalScore })
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'La IA no pudo generar la tesis.');
             }
+            const { thesis } = await response.json();
+            displayThesis(thesis);
+        } catch (error) {
+            console.error('Error al generar la tesis:', error);
+            displayThesis(`Error: ${error.message}`);
         }
     }
 
     // --- API & Simulation Calls ---
-    
-    // SIMULACIÓN DE NEWS API: Devuelve noticias de ejemplo para evitar bloqueos de CORS.
-    async function fetchNews() {
-        console.log("Usando datos de noticias simulados.");
+    async function getNewsAndSentimentAnalysis() {
+        console.log("Simulando análisis de sentimiento de noticias...");
+        return new Promise(resolve => setTimeout(() => resolve([
+            { ticker: "NVDA", companyName: "NVIDIA Corp", sentiment: "Positivo", potential_roi: 15.5 }, { ticker: "AAPL", companyName: "Apple Inc.", sentiment: "Positivo", potential_roi: 12.0 }, { ticker: "TSLA", companyName: "Tesla, Inc.", sentiment: "Positivo", potential_roi: 18.2 }, { ticker: "MSFT", companyName: "Microsoft Corp", sentiment: "Positivo", potential_roi: 9.5 }, { ticker: "AMZN", companyName: "Amazon.com, Inc.", sentiment: "Positivo", potential_roi: 8.0 }, { ticker: "GOOGL", companyName: "Alphabet Inc.", sentiment: "Positivo", potential_roi: 7.8 }, { ticker: "NFLX", companyName: "Netflix, Inc.", sentiment: "Positivo", potential_roi: 11.3 }, { ticker: "AMD", companyName: "Advanced Micro Devices", sentiment: "Positivo", potential_roi: 14.1 }, { ticker: "META", companyName: "Meta Platforms, Inc.", sentiment: "Positivo", potential_roi: 6.5 }, { ticker: "JPM", companyName: "JPMorgan Chase & Co.", sentiment: "Positivo", potential_roi: 10.1 }, { ticker: "V", companyName: "Visa Inc.", sentiment: "Positivo", potential_roi: 8.8 }
+        ]), 1000));
+    }
+
+    async function fetchStockData(ticker) {
+        console.log(`Simulando obtención de datos para ${ticker}`);
         return new Promise(resolve => {
             setTimeout(() => {
-                resolve([
-                    { title: "Apple (AAPL) anuncia un nuevo chip revolucionario que aumenta la velocidad de sus dispositivos en un 50%." },
-                    { title: "NVIDIA (NVDA) reporta ganancias récord superando las expectativas de Wall Street gracias a la demanda de IA." },
-                    { title: "Tesla (TSLA) revela un avance en la tecnología de baterías que podría duplicar la autonomía de sus vehículos." },
-                    { title: "Microsoft (MSFT) cierra un acuerdo multimillonario para integrar su IA en sistemas de salud globales." },
-                    { title: "Amazon (AMZN) expande su red logística con drones, prometiendo entregas en menos de 30 minutos." },
-                    { title: "Google (GOOGL) lanza una nueva suite de herramientas de IA para empresas, desafiando a la competencia." },
-                    { title: "Meta Platforms (META) anuncia un crecimiento del 20% en usuarios activos en su plataforma de metaverso." },
-                    { title: "Intel (INTC) enfrenta retrasos en su nueva generación de procesadores, afectando su cotización." },
-                    { title: "Ford (F) anuncia un recall masivo de vehículos eléctricos por un problema de software." },
-                    { title: "Netflix (NFLX) supera las proyecciones de suscriptores tras el lanzamiento de su plan con publicidad." },
-                    { title: "Advanced Micro Devices (AMD) presenta una nueva tarjeta gráfica que promete superar a la competencia en rendimiento." },
-                    { title: "Boeing (BA) recibe una multa millonaria por problemas de seguridad en su línea de producción." }
-                ]);
-            }, 500); // Simula un pequeño retraso de red
+                const dates = {};
+                let highPrice = 200 + Math.random() * 200;
+                let lowPrice = highPrice - (30 + Math.random() * 50);
+                let price = lowPrice + Math.random() * (highPrice - lowPrice);
+                for (let i = 0; i < 7; i++) {
+                    const d = new Date();
+                    d.setDate(d.getDate() - i);
+                    const dateStr = d.toISOString().split('T')[0];
+                    price += (Math.random() - 0.5) * 10;
+                    price = Math.max(lowPrice - 5, Math.min(highPrice + 5, price));
+                    const open = price;
+                    const high = open + Math.random() * 5;
+                    const low = open - Math.random() * 5;
+                    dates[dateStr] = { "2. high": Math.max(high, highPrice).toFixed(4), "3. low": Math.min(low, lowPrice).toFixed(4), "4. close": price.toFixed(4) };
+                }
+                const dayKeys = Object.keys(dates);
+                dates[dayKeys[Math.floor(Math.random()*dayKeys.length)]]['2. high'] = highPrice.toFixed(4);
+                dates[dayKeys[Math.floor(Math.random()*dayKeys.length)]]['3. low'] = lowPrice.toFixed(4);
+                resolve({ "Time Series (Daily)": dates });
+            }, 500);
         });
     }
 
-    // SIMULACIÓN DE GEMINI API: Devuelve un análisis de ejemplo para evitar el error 403.
-    async function callGeminiForBulkAnalysis(headlines) {
-        console.log("Usando análisis de IA simulado debido a restricciones del entorno.");
-        return new Promise(resolve => {
-            setTimeout(() => {
-                resolve([
-                    { ticker: "NVDA", companyName: "NVIDIA Corp", sentiment: "Positivo", potential_roi: 15.5 },
-                    { ticker: "AAPL", companyName: "Apple Inc.", sentiment: "Positivo", potential_roi: 12.0 },
-                    { ticker: "TSLA", companyName: "Tesla, Inc.", sentiment: "Positivo", potential_roi: 18.2 },
-                    { ticker: "MSFT", companyName: "Microsoft Corp", sentiment: "Positivo", potential_roi: 9.5 },
-                    { ticker: "AMZN", companyName: "Amazon.com, Inc.", sentiment: "Positivo", potential_roi: 8.0 },
-                    { ticker: "GOOGL", companyName: "Alphabet Inc.", sentiment: "Positivo", potential_roi: 7.8 },
-                    { ticker: "NFLX", companyName: "Netflix, Inc.", sentiment: "Positivo", potential_roi: 11.3 },
-                    { ticker: "AMD", companyName: "Advanced Micro Devices", sentiment: "Positivo", potential_roi: 14.1 },
-                    { ticker: "META", companyName: "Meta Platforms, Inc.", sentiment: "Positivo", potential_roi: 6.5 },
-                    { ticker: "INTC", companyName: "Intel Corporation", sentiment: "Negativo", potential_roi: -5.0 },
-                    { ticker: "F", companyName: "Ford Motor Company", sentiment: "Negativo", potential_roi: -7.2 },
-                    { ticker: "BA", companyName: "The Boeing Company", sentiment: "Negativo", potential_roi: -9.8 }
-                ]);
-            }, 1500); // Simula el tiempo de procesamiento de la IA
-        });
+    // --- Calculation ---
+    function calculateFibonacci(stockData) {
+        const timeSeries = stockData["Time Series (Daily)"];
+        const recentData = Object.entries(timeSeries).slice(0, 7);
+        if (recentData.length < 2) throw new Error("Datos insuficientes.");
+        const latestClose = parseFloat(recentData[0][1]["4. close"]);
+        const high = Math.max(...recentData.map(d => parseFloat(d[1]["2. high"])));
+        const low = Math.min(...recentData.map(d => parseFloat(d[1]["3. low"])));
+        const diff = high - low;
+        return {
+            levels: [ { level: 23.6, value: high - diff * 0.236 }, { level: 38.2, value: high - diff * 0.382 }, { level: 50.0, value: high - diff * 0.5 }, { level: 61.8, value: high - diff * 0.618 }, { level: 78.6, value: high - diff * 0.786 } ],
+            latestClose
+        };
     }
     
-    // --- Data Simulation ---
-    function getSimulatedStockPrice(ticker) {
-        let hash = 0;
-        for (let i = 0; i < ticker.length; i++) {
-            hash = ticker.charCodeAt(i) + ((hash << 5) - hash);
-        }
-        const random_factor = (Math.abs(hash) % 1000) / 1000;
-        const price = 50 + random_factor * 450; // Precio entre 50 y 500
-        return price.toFixed(2);
+    function calculateTechnicalScore(fibAnalysis) {
+        let score = 0;
+        const price = fibAnalysis.latestClose;
+        const strongSupport = fibAnalysis.levels.find(l => l.level === 61.8).value;
+        const mediumSupport = fibAnalysis.levels.find(l => l.level === 50.0).value;
+        const lightSupport = fibAnalysis.levels.find(l => l.level === 38.2).value;
+        if (price >= strongSupport && price < mediumSupport) score = 20;
+        else if (price >= mediumSupport && price < lightSupport) score = 15;
+        else if (price >= lightSupport) score = 10;
+        else score = 5;
+        return score;
     }
 
     // --- UI Update Functions ---
     function displayTop10Results(opportunities) {
         resultsTbody.innerHTML = '';
-        
         if (opportunities.length === 0) {
-            resultsTbody.innerHTML = '<tr><td colspan="5" class="text-center p-6 text-gray-400">La IA no encontró oportunidades de inversión claras en las noticias de hoy.</td></tr>';
+            resultsTbody.innerHTML = '<tr><td colspan="6" class="text-center p-6 text-gray-400">No se encontraron oportunidades claras tras el análisis integrado.</td></tr>';
             resultsContainer.classList.remove('hidden');
             return;
         }
-
+        const maxScore = opportunities[0].totalScore;
         opportunities.forEach(op => {
-            const currentPrice = getSimulatedStockPrice(op.ticker);
             const row = document.createElement('tr');
             row.className = 'border-b border-gray-800 hover:bg-gray-800/50';
-
+            const scorePercentage = (op.totalScore / maxScore) * 100;
             row.innerHTML = `
-                <td class="p-3 font-bold text-lg">${op.ticker}</td>
-                <td class="p-3 text-gray-300">${op.companyName}</td>
-                <td class="p-3"><span class="px-2 py-1 rounded-full text-sm font-semibold bg-green-500/20 text-green-300">${op.sentiment}</span></td>
-                <td class="p-3 text-right font-mono">$${currentPrice}</td>
-                <td class="p-3 text-right font-bold text-green-400">+${op.potential_roi.toFixed(2)}%</td>
+                <td class="p-3">
+                    <div class="font-bold text-lg">${op.ticker}</div>
+                    <div class="text-xs text-gray-400">${op.companyName}</div>
+                </td>
+                <td class="p-3 text-right font-mono">$${op.currentPrice.toFixed(2)}</td>
+                <td class="p-3 text-right font-semibold text-green-400">${op.potential_roi.toFixed(1)}</td>
+                <td class="p-3 text-right font-semibold text-indigo-400">${op.technicalScore.toFixed(1)}</td>
+                <td class="p-3">
+                    <div class="flex items-center">
+                        <span class="font-bold text-lg text-blue-300 w-16">${op.totalScore.toFixed(1)}</span>
+                        <div class="w-full bg-gray-700 rounded-full h-2.5"><div class="score-bar h-2.5" style="width: ${scorePercentage}%"></div></div>
+                    </div>
+                </td>
+                <td class="p-3 text-center">
+                    <button onclick="handleThesisRequest('${op.ticker}', '${op.companyName}', ${op.potential_roi.toFixed(1)}, ${op.technicalScore.toFixed(1)})" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-3 rounded-lg transition duration-300 text-sm">
+                        ✨ Generar Tesis
+                    </button>
+                </td>
             `;
             resultsTbody.appendChild(row);
         });
-
         resultsContainer.classList.remove('hidden');
     }
 
+    function openThesisModal(ticker, companyName) {
+        thesisTitle.textContent = `Tesis de Inversión para ${ticker} (${companyName})`;
+        thesisLoader.style.display = 'block';
+        thesisContent.style.display = 'none';
+        thesisModal.classList.remove('hidden');
+        setTimeout(() => {
+            thesisModal.classList.add('opacity-100');
+            thesisModal.querySelector('.transform').classList.remove('scale-95');
+        }, 10);
+    }
+
+    function closeThesisModal() {
+        thesisModal.classList.remove('opacity-100');
+        thesisModal.querySelector('.transform').classList.add('scale-95');
+        setTimeout(() => thesisModal.classList.add('hidden'), 300);
+    }
+
+    function displayThesis(text) {
+        thesisText.textContent = text;
+        thesisLoader.style.display = 'none';
+        thesisContent.style.display = 'block';
+    }
+
     function setLoadingState(isLoading, message = '') {
-        loader.querySelector('.loader').classList.remove('hidden');
-        loaderText.textContent = message;
         if (isLoading) {
             analyzeButton.disabled = true;
             loader.classList.remove('hidden');
             loader.classList.add('flex');
+            loaderText.textContent = message;
         } else {
             analyzeButton.disabled = false;
             loader.classList.add('hidden');
@@ -230,4 +325,3 @@
 </script>
 </body>
 </html>
-
