@@ -1,40 +1,63 @@
-// Import fetch if you are using a Node.js version older than 18
-// For modern serverless environments (like Vercel), 'fetch' is available globally.
-
 export default async function handler(req, res) {
-    // La API Key se obtiene de una variable de entorno segura, no se escribe en el código.
-    const apiKey = process.env.NEWS_API_KEY;
-
-    if (!apiKey) {
-        // Envía un error 500 (Error Interno del Servidor) si la clave no está configurada.
-        return res.status(500).json({ error: 'La API Key del servidor de noticias no está configurada.' });
+    if (req.method !== 'POST') {
+        return res.status(405).json({ error: 'Method Not Allowed' });
     }
 
-    // Construye la URL para obtener las noticias de negocios más importantes de EE. UU.
-    const newsApiUrl = `https://newsapi.org/v2/top-headlines?country=us&category=business&pageSize=40&apiKey=${apiKey}`;
+    const geminiApiKey = process.env.GEMINI_API_KEY;
+    if (!geminiApiKey) {
+        return res.status(500).json({ error: 'La clave de API para Gemini no está configurada en el servidor.' });
+    }
 
     try {
-        // Realiza la llamada a NewsAPI desde el servidor.
-        const newsResponse = await fetch(newsApiUrl);
+        const { ticker, companyName, sentimentScore, technicalScore } = req.body;
 
-        // Si NewsAPI responde con un error, lo pasamos al frontend.
-        if (!newsResponse.ok) {
-            const errorData = await newsResponse.json();
-            console.error('Error from NewsAPI:', errorData);
-            return res.status(newsResponse.status).json({ 
-                error: `NewsAPI respondió con un error: ${errorData.message || newsResponse.statusText}` 
-            });
+        if (!ticker || !companyName || sentimentScore === undefined || technicalScore === undefined) {
+            return res.status(400).json({ error: 'Faltan datos para generar la tesis.' });
         }
-        
-        // Si todo sale bien, obtiene los datos en formato JSON.
-        const newsData = await newsResponse.json();
 
-        // Envía una respuesta exitosa (código 200) con los artículos al frontend.
-        res.status(200).json(newsData);
+        const prompt = `
+            Actúa como un analista de inversiones senior para un fondo de cobertura.
+            Tu tarea es redactar una tesis de inversión concisa y persuasiva de un solo párrafo (máximo 4-5 frases) para la acción ${ticker} (${companyName}).
+
+            Aquí está el contexto de nuestro análisis cuantitativo:
+            - Puntaje de Sentimiento (basado en noticias): ${sentimentScore} (un puntaje alto como +15 es muy positivo).
+            - Puntaje Técnico (basado en Fibonacci a 1 semana): ${technicalScore} (un puntaje alto como 20 indica que el precio está en una zona de soporte técnico fuerte).
+
+            Basado en esta información y tu conocimiento general del mercado sobre ${companyName}, elabora la tesis.
+            - Comienza con una declaración fuerte sobre la oportunidad.
+            - Integra la idea de que hay un catalizador positivo reciente (sentimiento de noticias).
+            - Menciona que el precio se encuentra en una posición técnicamente atractiva.
+            - Concluye con una breve mención de la perspectiva o el riesgo principal a vigilar.
+            - Escribe en un tono profesional y directo. No uses saludos ni despedidas, solo el párrafo de la tesis.
+        `;
+
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${geminiApiKey}`;
+
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: {
+                    temperature: 0.7,
+                    maxOutputTokens: 250,
+                }
+            })
+        });
+
+        if (!response.ok) {
+            const errorBody = await response.text();
+            console.error('Error desde la API de Gemini:', errorBody);
+            throw new Error(`La API de Gemini respondió con el estado: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const thesis = data.candidates[0]?.content?.parts[0]?.text || "La IA no pudo generar una respuesta.";
+
+        res.status(200).json({ thesis });
 
     } catch (error) {
-        // Captura cualquier otro error (ej. problemas de red en el servidor).
-        console.error('Error interno al contactar NewsAPI:', error);
-        res.status(500).json({ error: 'Falló la conexión del servidor con el servicio de noticias.' });
+        console.error('Error interno al generar la tesis:', error);
+        res.status(500).json({ error: 'Falló la conexión del servidor con el servicio de IA.' });
     }
 }
